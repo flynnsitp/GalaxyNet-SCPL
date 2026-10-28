@@ -1,0 +1,67 @@
+experiment:
+  name: dinov3_mma_base
+  seed: [2026]
+dataset:
+  root: /home/flynn/work/datasets/astro/datasets/gzd5_cls_ten_review
+  split_manifest: /home/flynn/work/datasets/astro/datasets/gzd5_cls_ten_review/split_manifest_seed2026.json
+  structural_json: /home/flynn/work/datasets/astro/datasets/gzd5_cls_ten_review/structural.json
+  structural_feature_count: 12
+  input_size: 256
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+  classes:
+    [
+      barred_spiral,
+      cigar_shaped_smooth,
+      disturbed,
+      edge_on_no_bulge,
+      edge_on_with_bulge,
+      in_between_round_smooth,
+      merging,
+      round_smooth,
+      unbarred_loose_spiral,
+      unbarred_tight_spiral,
+    ]
+  expected_raw_counts:
+    train: 14190
+    val: 1773
+    test: 1773
+  expected_valid_counts:
+    train: 14186
+    val: 1773
+    test: 1773
+  label_fraction: 1.0
+augment:
+  random_resized_crop_scale_min: 1.0
+  right_angle_rotation_only: false
+  random_rotation_probability: 0.5
+  rotation_degrees: 180.0
+  horizontal_flip_probability: 0.5
+  vertical_flip_probability: 0.5
+  gaussian_blur_probability: 0.5
+  gaussian_blur_kernel_size: 5
+  gaussian_blur_sigma: [0.1, 2.0]
+  gaussian_noise_probability: 0.5
+  gaussian_noise_std: 0.1
+backbone:
+  name: dinov3_convnext_small
+  weights_dir: /home/flynn/work/models/dinov3
+  train_mode: full
+adapter:
+  type: mma
+  hidden_dim: 512
+  embedding_dim: 256
+  attention_heads: 8
+train:
+  mode: staged
+  epochs: 30
+  labeled_batch_size: 16
+  learning_rate: 1.0e-04
+  min_learning_rate: 1.0e-06
+  backbone_learning_rate: 1.0e-05
+  backbone_min_learning_rate: 1.0e-07
+  warmup_epochs: 4
+output:
+  root: /home/flynn/work/run_logs/galaxy/gzd5_cls_ten_review/mrd_scp/runs/multi_seeds/base_pct_100
+evaluation:
+  tta: false

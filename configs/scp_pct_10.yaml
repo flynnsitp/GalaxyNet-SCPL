@@ -1,0 +1,79 @@
+experiment:
+  name: dinov3_mma_scp_pct_10
+  seed: [2026]
+dataset:
+  root: /home/flynn/work/datasets/astro/datasets/gzd5_cls_ten_review
+  split_manifest: /home/flynn/work/datasets/astro/datasets/gzd5_cls_ten_review/split_manifest_seed2026.json
+  structural_json: /home/flynn/work/datasets/astro/datasets/gzd5_cls_ten_review/structural.json
+  structural_feature_count: 12
+  input_size: 256
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+  classes:
+    [
+      barred_spiral,
+      cigar_shaped_smooth,
+      disturbed,
+      edge_on_no_bulge,
+      edge_on_with_bulge,
+      in_between_round_smooth,
+      merging,
+      round_smooth,
+      unbarred_loose_spiral,
+      unbarred_tight_spiral,
+    ]
+  expected_raw_counts:
+    train: 14190
+    val: 1773
+    test: 1773
+  expected_valid_counts:
+    train: 14186
+    val: 1773
+    test: 1773
+  label_fraction: 0.1
+augment:
+  random_resized_crop_scale_min: 1.0
+  right_angle_rotation_only: false
+  random_rotation_probability: 0.5
+  rotation_degrees: 180.0
+  horizontal_flip_probability: 0.5
+  vertical_flip_probability: 0.5
+  gaussian_blur_probability: 0.5
+  gaussian_blur_kernel_size: 5
+  gaussian_blur_sigma: [0.1, 2.0]
+  gaussian_noise_probability: 0.5
+  gaussian_noise_std: 0.1
+backbone:
+  name: dinov3_convnext_small
+  weights_dir: /home/flynn/work/models/dinov3
+  train_mode: full
+adapter:
+  type: mma
+  hidden_dim: 512
+  embedding_dim: 256
+  attention_heads: 8
+train:
+  mode: scp_from_checkpoint
+  epochs: 30
+  batch_size: 16
+  labeled_batch_size: 16
+  learning_rate: 1.0e-04
+  min_learning_rate: 1.0e-06
+  backbone_learning_rate: 1.0e-05
+  backbone_min_learning_rate: 1.0e-07
+  initial_checkpoint: /home/flynn/work/run_logs/galaxy/gzd5_cls_ten_review/mrd_scp/runs/multi_seeds/base_pct_10/base/20260910-191626/checkpoints/best.pt
+output:
+  root: /home/flynn/work/run_logs/galaxy/gzd5_cls_ten_review/mrd_scp/runs/multi_seeds/scp_pct_10
+scp:
+  structural_knn: 10
+  max_selected_per_class: 400
+  max_pseudo_labels: 5000
+  visual_confidence_threshold: 0.9
+  structural_confidence_threshold: 0.5
+  joint_margin_threshold: 0.1
+  weak_view_max_total_variation: 0.05
+  reliability_power: 1.0
+  class_balance_exponent: 0.5
+  loss_weight: 0.1
+evaluation:
+  tta: false

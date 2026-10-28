@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "galaxynet-scpl"
+version = "0.1.0"
+description = "GZD5 DINOv3 MMA supervised and structural-consistency pseudo-label training"
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.4",
+  "torchvision>=0.19",
+  "numpy>=1.24",
+  "Pillow>=10",
+  "PyYAML>=6",
+  "tqdm>=4.66",
+]
+
+[tool.setuptools.packages.find]
+include = ["core*"]
